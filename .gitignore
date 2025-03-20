@@ -1,2 +1,8 @@
 # Ignore following files
 .idea
+
+# Generated files
+CASHTokens.interp
+CASHTokens.java
+CASHTokens.tokens
+CASHTokens.*
