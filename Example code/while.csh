@@ -2,7 +2,7 @@ HELLO.
 
 ASK numDiffItems = "Enter the price of the item "
 
-SCAN numDiffItems > 0:
+SCAN (numDiffItems > 0):
     ASK price = "Enter the price of the item "
     ASK quantity = "Enter the quantity " $
     COST itemTotal = price * quantity $
