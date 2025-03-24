@@ -1,6 +1,6 @@
 HELLO.
 
-ASK price = "Enter the price of the item "
+ASK price = "Enter the price of the item " $
 ASK quantity = "Enter the quantity " $
 
 COST total = price * quantity $
