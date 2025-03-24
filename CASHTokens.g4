@@ -14,9 +14,10 @@ DISCOUNT_KEYWORD : 'DISCOUNT';
 ASK_KEYWORD : 'ASK';
 SCAN_KEYWORD : 'SCAN';
 
-START_TASK : 'START';
+START_TASK : 'START TASK';
 END_TASK : 'END';
 DO_TASK : 'TODO';
+TASK_INPUT : 'IN';
 
 OPEN_PAREN : '(';
 CLOSE_PAREN : ')';
@@ -26,7 +27,7 @@ OP_ADD : '+';
 OP_SUB : '-';
 OP_DIV : '/';
 
-COND_CONF : 'CONIFRM';
+COND_CONF : 'CONFIRM';
 COND_CHECK : 'CHECK_AGAIN';
 COND_FALLBACK : 'FALLBACK';
 
@@ -35,14 +36,15 @@ COMPARE_LT : '<';
 COMPARE_GT : '>';
 
 
+
 NUMBER: '-'? DIGIT+ (',' DIGIT+)?;
-COMMENT : 'NOTE' (~[\r\n])* DOLLAR -> skip;
+COMMENT : 'NOTE' (~[\r])* DOLLAR NEWLINE -> skip;
 NEWLINE : '\r'? '\n' [ \r\n\t]*;
 WHITESPACE : [ \r\n\t]+ -> skip;
 
 STRING : '"' (~["])* '"';
 
 fragment CHAR : [a-zA-ZåæøÅÆØ];
-fragment CHAR_PLUS : CHAR | '-';
+fragment CHAR_PLUS : CHAR | '-' | NUMBER;
 fragment DIGIT : [0-9];
 IDENTIFIER : CHAR CHAR_PLUS*;
