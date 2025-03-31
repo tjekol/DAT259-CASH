@@ -38,7 +38,7 @@ COMPARE_GT : '>';
 
 
 NUMBER: '-'? DIGIT+ (',' DIGIT+)?;
-COMMENT : 'NOTE' (~[\r])* DOLLAR NEWLINE -> skip;
+COMMENT : 'NOTE' (~[\r\n])* DOLLAR NEWLINE -> skip;
 NEWLINE : '\r'? '\n' [ \r\n\t]*;
 WHITESPACE : [ \r\n\t]+ -> skip;
 
