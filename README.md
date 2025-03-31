@@ -1,9 +1,9 @@
 # CA$H
 
 
-- [ ] Lexer
-- [ ] Parser
-- [ ] Semantic analysis
+- [x] Lexer
+- [x] Parser
+- [x] Semantic analysis
 - [ ] Interpreter
 - [ ] Compiler
 
