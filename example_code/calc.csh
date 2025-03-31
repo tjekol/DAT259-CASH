@@ -5,4 +5,5 @@ COST quantity = 2 $
 COST total = price * quantity $
 
 DISCOUNT(10, total) $
+RECEIPT "Total: ", total $
 BYE.
