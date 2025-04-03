@@ -5,10 +5,25 @@ from cash.CASHLexer import CASHLexer
 from cash.CASHVisitor import CASHVisitor
 
 
+class Task: 
+    def __init__(self, name: str, param_name: str, body):
+        self.name = name
+        self.param_name = param_name
+        self.body = body
+
+    def execute(self, visitor: 'InterpreterVisitor', param_value): 
+
+        visitor.symbol_table.add_var(self.param_name, param_value)
+
+        for stmt in self.body:
+            visitor.visit(stmt)
+
+
 class SymbolTable:
 
     def __init__(self):
         self.storage = {}
+        self.tasks = {}
 
     def add_var(self, name: str, value: float):
         self.storage[name] = value
@@ -17,6 +32,16 @@ class SymbolTable:
         if name not in self.storage:
             raise KeyError(f"Variable {name} not found!!")
         return self.storage[name]
+    
+
+    def add_task(self, task: Task):
+        self.tasks[task.name] = task 
+
+    def get_task(self, name: str): 
+        return self.tasks[name]
+
+
+
 
 
 class InterpreterVisitor(CASHVisitor): 
@@ -111,9 +136,27 @@ class InterpreterVisitor(CASHVisitor):
 
             isSatisfied = self.visit(ctx.comparison())
                
+    def visitTask_mod(self, ctx: CASHParser.Task_modContext):
+        name = str(ctx.IDENTIFIER(0))
+        param = str(ctx.IDENTIFIER(1)) 
+
+        task_body = list(ctx.task_body().getChildren())
+
+        task = Task(name, param, task_body)
+
+        self.symbol_table.add_task(task)
+
+    def visitTodo(self, ctx: CASHParser.TodoContext):
+        name = str(ctx.IDENTIFIER())
+        param = self.visit(ctx.expression())
+
+        task = self.symbol_table.get_task(name)
+
+        task.execute(self, param)
+    
 
 def main():
-    input_stream = FileStream("./example_code/while.csh", encoding="utf-8")
+    input_stream = FileStream("./example_code/func.csh", encoding="utf-8")
     lexer = CASHLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     parser = CASHParser(token_stream)

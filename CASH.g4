@@ -18,7 +18,9 @@ cond_mod : COND_CONF comparison COLON NEWLINE? main_stmt
            COND_CHECK comparison COLON NEWLINE? main_stmt
            COND_FALLBACK COLON NEWLINE? main_stmt;
 
-task_mod : START_TASK IDENTIFIER OPEN_PAREN TASK_INPUT COLON IDENTIFIER CLOSE_PAREN COLON NEWLINE? (scan_mod |main_stmt )* END_TASK IDENTIFIER NEWLINE?;
+task_mod : START_TASK IDENTIFIER OPEN_PAREN TASK_INPUT COLON IDENTIFIER CLOSE_PAREN COLON NEWLINE? task_body END_TASK IDENTIFIER NEWLINE?;
+
+task_body : (scan_mod | main_stmt )+;
 
 expression : expression OP_MULT expression # mult 
     | expression OP_ADD expression # add 
