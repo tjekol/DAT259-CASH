@@ -1,6 +1,7 @@
 HELLO.
 
-ASK numDiffItems = "Enter the price of the item " $
+ASK numDiffItems = "Enter the number of unique items" $
+COST total = 0 $
 
 SCAN (numDiffItems > 0):
     ASK price = "Enter the price of the item " $
@@ -8,6 +9,7 @@ SCAN (numDiffItems > 0):
     COST itemTotal = price * quantity $
     COST total = total + itemTotal $
     COST numDiffItems = numDiffItems - 1 $
+$
 
 RECEIPT "Card Total: ", total $
 

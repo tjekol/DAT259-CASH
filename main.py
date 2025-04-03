@@ -25,7 +25,7 @@ class InterpreterVisitor(CASHVisitor):
 
 
     def visitPrint(self, ctx: CASHParser.PrintContext):
-        empty_string = " "
+        empty_string = ""
         if ctx.STRING() is not None: 
             string_token = ctx.STRING()
             empty_string += str(string_token)[1:-1]
@@ -82,14 +82,38 @@ class InterpreterVisitor(CASHVisitor):
         name = str(ctx.IDENTIFIER())
         var = self.symbol_table.get_var(name)
         return var
-        
     
+    def visitAsk(self, ctx: CASHParser.AskContext):
+        prompt = str(ctx.STRING())[1:-1]
+        value = float(input(f"{prompt}: "))
+        name = str(ctx.IDENTIFIER()) 
+        self.symbol_table.add_var(name, value)
+
+    def visitCond_mod(self, ctx: CASHParser.Cond_modContext):
+        first_cond = self.visit(ctx.comparison(0))
+        if first_cond: 
+            self.visit(ctx.main_stmt(0))
+            return 
+        
+        sec_cond = self.visit(ctx.comparison(1))
+        if sec_cond: 
+            self.visit(ctx.main_stmt(1))
+            return 
+        
+        self.visit(ctx.main_stmt(2))
 
 
+    def visitScan_mod(self, ctx: CASHParser.Scan_modContext):
+        isSatisfied = self.visit(ctx.comparison())
+        while isSatisfied:
+            for stmt in ctx.main_stmt():
+                self.visit(stmt)
+
+            isSatisfied = self.visit(ctx.comparison())
+               
 
 def main():
-
-    input_stream = FileStream("./example_code/calc.csh", encoding="utf-8")
+    input_stream = FileStream("./example_code/while.csh", encoding="utf-8")
     lexer = CASHLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     parser = CASHParser(token_stream)

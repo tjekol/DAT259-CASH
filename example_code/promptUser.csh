@@ -1,7 +1,7 @@
 HELLO.
 
-ASK price = "Enter the price of the item " $
-ASK quantity = "Enter the quantity " $
+ASK price = "Enter the price of the item" $
+ASK quantity = "Enter the quantity" $
 
 COST total = price * quantity $
 DISCOUNT(10, total) $
