@@ -42,14 +42,9 @@ class SymbolTable:
     def get_task(self, name: str): 
         return self.tasks[name]
 
-
-
-
-
 class InterpreterVisitor(CASHVisitor): 
     def __init__(self, symbol_table: SymbolTable):
         self.symbol_table = symbol_table
-
 
     def visitPrint(self, ctx: CASHParser.PrintContext):
         empty_string = ""
@@ -69,8 +64,6 @@ class InterpreterVisitor(CASHVisitor):
         name = str(ctx.IDENTIFIER())
         value = self.visit(ctx.expression())
         self.symbol_table.add_var(name,value)
-
-
 
     def visitMult(self, ctx: CASHParser.MultContext):
         return self.visit(ctx.getChild(0)) * self.visit(ctx.getChild(2))
@@ -129,7 +122,6 @@ class InterpreterVisitor(CASHVisitor):
         
         self.visit(ctx.main_stmt(2))
 
-
     def visitScan_mod(self, ctx: CASHParser.Scan_modContext):
         isSatisfied = self.visit(ctx.comparison())
         while isSatisfied:
@@ -140,14 +132,9 @@ class InterpreterVisitor(CASHVisitor):
                
     def visitTask_mod(self, ctx: CASHParser.Task_modContext):
         name = str(ctx.IDENTIFIER(0))
-
         params = self.visit(ctx.param_list())
-        
-
         task_body = list(ctx.task_body().getChildren())
-
         task = Task(name, params, task_body)
-
         self.symbol_table.add_task(task)
 
     def visitTodo(self, ctx: CASHParser.TodoContext):
@@ -174,8 +161,6 @@ class InterpreterVisitor(CASHVisitor):
     
     def visitActual_param_list(self, ctx: CASHParser.Actual_param_listContext):
         return [self.visit(expr) for expr in ctx.expression()]
-        
-    
 
 def main():
     input_stream = FileStream("./example_code/func.csh", encoding="utf-8")
