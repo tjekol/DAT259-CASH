@@ -51,7 +51,7 @@ class InterpreterVisitor(CASHVisitor):
         if ctx.STRING() is not None: 
             string_token = ctx.STRING()
             empty_string += str(string_token)[1:-1]
-           
+
         if ctx.IDENTIFIER() is not None: 
             name = str(ctx.IDENTIFIER())
             var = self.symbol_table.get_var(name)
@@ -85,9 +85,13 @@ class InterpreterVisitor(CASHVisitor):
             return left == right 
         elif ctx.COMPARE_LT() is not None: 
             return left < right 
+        elif ctx.COMPARE_LTE() is not None:
+            return left <= right 
         elif ctx.COMPARE_GT() is not None: 
-            return left > right 
-        
+            return left > right
+        elif ctx.COMPARE_GTE() is not None:
+            return left >= right
+
     def visitDiscount(self, ctx: CASHParser.DiscountContext):
         exp1 = self.visit(ctx.expression())
         name = str(ctx.IDENTIFIER())
@@ -110,17 +114,11 @@ class InterpreterVisitor(CASHVisitor):
         self.symbol_table.add_var(name, value)
 
     def visitCond_mod(self, ctx: CASHParser.Cond_modContext):
-        first_cond = self.visit(ctx.comparison(0))
-        if first_cond: 
-            self.visit(ctx.main_stmt(0))
-            return 
-        
-        sec_cond = self.visit(ctx.comparison(1))
-        if sec_cond: 
-            self.visit(ctx.main_stmt(1))
-            return 
-        
-        self.visit(ctx.main_stmt(2))
+        for c, stmt in zip(ctx.comparison(), ctx.main_stmt()):
+            if self.visit(c):
+                self.visit(stmt)
+                return
+        self.visit(ctx.main_stmt(len(ctx.comparison())))
 
     def visitScan_mod(self, ctx: CASHParser.Scan_modContext):
         isSatisfied = self.visit(ctx.comparison())
@@ -129,7 +127,7 @@ class InterpreterVisitor(CASHVisitor):
                 self.visit(stmt)
 
             isSatisfied = self.visit(ctx.comparison())
-               
+
     def visitTask_mod(self, ctx: CASHParser.Task_modContext):
         name = str(ctx.IDENTIFIER(0))
         params = self.visit(ctx.param_list())
@@ -163,7 +161,7 @@ class InterpreterVisitor(CASHVisitor):
         return [self.visit(expr) for expr in ctx.expression()]
 
 def main():
-    input_stream = FileStream("./example_code/func.csh", encoding="utf-8")
+    input_stream = FileStream("./example_code/ifThenElse.csh", encoding="utf-8")
     lexer = CASHLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     parser = CASHParser(token_stream)

@@ -5,12 +5,14 @@ ASK quantity = "Enter the quantity " $
 
 COST total = price * quantity $
 
-CONFIRM quantity > 20:
+CONFIRM quantity >= 20:
     DISCOUNT(20, total) $
-CHECK_AGAIN quantity > 10:
+CHECK_AGAIN quantity >= 10:
     DISCOUNT(10, total) $
-FALLBACK:
+CHECK_AGAIN quantity >= 5:
     DISCOUNT(5, total) $
+FALLBACK:
+    DISCOUNT(0, total) $
 
 RECEIPT "Discounted total: ", total $
 
