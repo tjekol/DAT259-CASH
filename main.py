@@ -6,14 +6,16 @@ from cash.CASHVisitor import CASHVisitor
 
 
 class Task: 
-    def __init__(self, name: str, param_name: str, body):
+    def __init__(self, name: str, param_names: list, body):
         self.name = name
-        self.param_name = param_name
+        self.param_names = param_names
         self.body = body
 
-    def execute(self, visitor: 'InterpreterVisitor', param_value): 
+    def execute(self, visitor: 'InterpreterVisitor', param_values): 
 
-        visitor.symbol_table.add_var(self.param_name, param_value)
+    
+        for name, value in zip(self.param_names, param_values):
+            visitor.symbol_table.add_var(name, value)
 
         for stmt in self.body:
             visitor.visit(stmt)
@@ -138,21 +140,41 @@ class InterpreterVisitor(CASHVisitor):
                
     def visitTask_mod(self, ctx: CASHParser.Task_modContext):
         name = str(ctx.IDENTIFIER(0))
-        param = str(ctx.IDENTIFIER(1)) 
+
+        params = self.visit(ctx.param_list())
+        
 
         task_body = list(ctx.task_body().getChildren())
 
-        task = Task(name, param, task_body)
+        task = Task(name, params, task_body)
 
         self.symbol_table.add_task(task)
 
     def visitTodo(self, ctx: CASHParser.TodoContext):
         name = str(ctx.IDENTIFIER())
-        param = self.visit(ctx.expression())
+        
+        if ctx.actual_param_list():
+            params = self.visit(ctx.actual_param_list())
+        else:
+            params = []
 
         task = self.symbol_table.get_task(name)
 
-        task.execute(self, param)
+        task.execute(self, params)
+
+    def visitParam_list(self, ctx: CASHParser.Param_listContext):
+        index = 0
+        curr = ctx.IDENTIFIER(index)
+        result = []
+        while curr is not None: 
+            result.append(str(curr))
+            index += 1
+            curr = ctx.IDENTIFIER(index)
+        return result
+    
+    def visitActual_param_list(self, ctx: CASHParser.Actual_param_listContext):
+        return [self.visit(expr) for expr in ctx.expression()]
+        
     
 
 def main():
