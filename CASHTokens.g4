@@ -33,9 +33,9 @@ COND_FALLBACK : 'FALLBACK';
 
 COMPARE_EQ : '=';
 COMPARE_LT : '<';
+COMPARE_LTE : '<=';
 COMPARE_GT : '>';
-
-
+COMPARE_GTE : '>=';
 
 NUMBER: '-'? DIGIT+ (',' DIGIT+)?;
 COMMENT : 'NOTE' (~[\r\n])* DOLLAR NEWLINE -> skip;

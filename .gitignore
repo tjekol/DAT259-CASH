@@ -1,8 +1,6 @@
 # Ignore following files
 .idea
-
+cash/
+.antlr
 # Generated files
-CASHTokens.interp
-CASHTokens.java
-CASHTokens.tokens
 CASHTokens.*
