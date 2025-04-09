@@ -13,7 +13,6 @@ START TASK t1 (IN: x):
 
 END t1
 
-
 TODO t1(x: 3) $
 
 BYE.

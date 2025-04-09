@@ -11,7 +11,6 @@ statement : COST_KEYWORD IDENTIFIER COMPARE_EQ expression # cost
         | ASK_KEYWORD IDENTIFIER COMPARE_EQ STRING # ask
         | DO_TASK IDENTIFIER OPEN_PAREN actual_param_list CLOSE_PAREN # todo;
 
-
 scan_mod : SCAN_KEYWORD OPEN_PAREN comparison CLOSE_PAREN COLON NEWLINE? main_stmt* DOLLAR NEWLINE?;
 
 cond_mod : COND_CONF comparison COLON NEWLINE? main_stmt
