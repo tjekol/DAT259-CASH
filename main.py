@@ -102,9 +102,12 @@ class InterpreterVisitor(CASHVisitor):
         exp2 = exp2 - (exp2 * (float(exp1) / 100))
         self.symbol_table.add_var(name, exp2)
 
-    def visitNum(self, ctx: CASHParser.NumContext):
-        return float(str(ctx.NUMBER()).replace(",", "."))
+    def visitInt(self, ctx: CASHParser.IntContext):
+        return int(str(ctx.INT()))
     
+    def visitFloat(self, ctx: CASHParser.FloatContext):
+         return float(str(ctx.FLOAT()).replace(",", "."))
+
     def visitVar(self, ctx: CASHParser.VarContext):
         name = str(ctx.IDENTIFIER())
         var = self.symbol_table.get_var(name)
@@ -178,7 +181,7 @@ class InterpreterVisitor(CASHVisitor):
     
 
 def main():
-    input_stream = FileStream("./example_code/func.csh", encoding="utf-8")
+    input_stream = FileStream("./example_code/while.csh", encoding="utf-8")
     lexer = CASHLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     parser = CASHParser(token_stream)

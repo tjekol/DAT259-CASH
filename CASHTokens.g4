@@ -36,8 +36,9 @@ COMPARE_LT : '<';
 COMPARE_GT : '>';
 
 
+INT: '-'? DIGIT+;
+FLOAT: '-'? DIGIT+ ',' DIGIT+;
 
-NUMBER: '-'? DIGIT+ (',' DIGIT+)?;
 COMMENT : 'NOTE' (~[\r\n])* DOLLAR NEWLINE -> skip;
 NEWLINE : '\r'? '\n' [ \r\n\t]*;
 WHITESPACE : [ \r\n\t]+ -> skip;
@@ -45,6 +46,6 @@ WHITESPACE : [ \r\n\t]+ -> skip;
 STRING : '"' (~["])* '"';
 
 fragment CHAR : [a-zA-ZåæøÅÆØ];
-fragment CHAR_PLUS : CHAR | '-' | NUMBER;
+fragment CHAR_PLUS : CHAR | '-' | INT;
 fragment DIGIT : [0-9];
 IDENTIFIER : CHAR CHAR_PLUS*;
