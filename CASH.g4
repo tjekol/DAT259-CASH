@@ -6,7 +6,7 @@ program : START_KEYWORD NEWLINE (main_stmt | cond_mod | scan_mod | task_mod)* EN
 main_stmt : statement DOLLAR NEWLINE;
 
 statement : COST_KEYWORD IDENTIFIER COMPARE_EQ expression # cost
-        | PRINT_KEYWORD STRING (COMMA IDENTIFIER)? # print
+        | PRINT_KEYWORD (STRING (COMMA IDENTIFIER)? | IDENTIFIER) # print
         | DISCOUNT_KEYWORD OPEN_PAREN expression COMMA IDENTIFIER CLOSE_PAREN # discount
         | ASK_KEYWORD IDENTIFIER COMPARE_EQ STRING # ask
         | DO_TASK IDENTIFIER OPEN_PAREN actual_param_list CLOSE_PAREN # todo;
@@ -29,7 +29,8 @@ expression : OPEN_PAREN expression CLOSE_PAREN # nested
     | expression OP_ADD expression # add 
     | expression OP_SUB expression # sub 
     | expression OP_DIV expression # div 
-    | NUMBER # num
+    | FLOAT # float
+    | INT # int
     | IDENTIFIER # var ;  
 
 comparison : expression (COMPARE_EQ | COMPARE_LT | COMPARE_GT | COMPARE_GTE | COMPARE_LTE) expression ;
