@@ -164,7 +164,7 @@ class InterpreterVisitor(CASHVisitor):
         return [self.visit(expr) for expr in ctx.expression()]
 
 def main():
-    input_stream = FileStream("./example_code/while.csh", encoding="utf-8")
+    input_stream = FileStream("./example_code/fibonacci.csh", encoding="utf-8")
     lexer = CASHLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     parser = CASHParser(token_stream)

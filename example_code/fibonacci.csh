@@ -8,11 +8,11 @@ START TASK fibonacci (IN: n):
     CONFIRM n < 1: 
         RECEIPT "Invalid" $
     CHECK_AGAIN n = 1: 
-        RECEIPT "Fibonacci result: ", a $
+        RECEIPT "Fibonacci when n=1: ", a $
     FALLBACK:
         RECEIPT "Fibonacci series up to: ", a $
         SCAN (count < n): 
-            RECEIPT ". ", a $
+            RECEIPT a $
             COST nth = a + b $
             COST a = b $
             COST b = nth $

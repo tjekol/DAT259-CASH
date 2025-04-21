@@ -14,3 +14,4 @@ $
 RECEIPT "Card Total: ", total $
 
 BYE.
+
