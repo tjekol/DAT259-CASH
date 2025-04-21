@@ -33,12 +33,12 @@ COND_FALLBACK : 'FALLBACK';
 
 COMPARE_EQ : '=';
 COMPARE_LT : '<';
+COMPARE_LTE : '<=';
 COMPARE_GT : '>';
-
+COMPARE_GTE : '>=';
 
 INT: '-'? DIGIT+;
 FLOAT: '-'? DIGIT+ ',' DIGIT+;
-
 COMMENT : 'NOTE' (~[\r\n])* DOLLAR NEWLINE -> skip;
 NEWLINE : '\r'? '\n' [ \r\n\t]*;
 WHITESPACE : [ \r\n\t]+ -> skip;
