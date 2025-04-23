@@ -63,6 +63,9 @@ class InterpreterVisitor(CASHVisitor):
         value = self.visit(ctx.expression())
         self.symbol_table.add_var(name,value)
 
+    def visitNested(self, ctx: CASHParser.NestedContext):
+        return self.visit(ctx.expression())
+
     def visitMult(self, ctx: CASHParser.MultContext):
         return self.visit(ctx.getChild(0)) * self.visit(ctx.getChild(2))
     
