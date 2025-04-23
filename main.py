@@ -52,11 +52,9 @@ class InterpreterVisitor(CASHVisitor):
             string_token = ctx.STRING()
             empty_string += str(string_token)[1:-1]
 
-        if ctx.IDENTIFIER() is not None: 
-            name = str(ctx.IDENTIFIER())
-            var = self.symbol_table.get_var(name)
-            empty_string += str(var)
-
+        if ctx.expression() is not None:
+            value = self.visit(ctx.expression())
+            empty_string += str(value)
         print(str(empty_string))
 
 
@@ -103,7 +101,7 @@ class InterpreterVisitor(CASHVisitor):
         return int(str(ctx.INT()))
     
     def visitFloat(self, ctx: CASHParser.FloatContext):
-         return float(str(ctx.FLOAT()).replace(",", "."))
+        return float(str(ctx.FLOAT()).replace(",", "."))
 
     def visitVar(self, ctx: CASHParser.VarContext):
         name = str(ctx.IDENTIFIER())
@@ -164,7 +162,7 @@ class InterpreterVisitor(CASHVisitor):
         return [self.visit(expr) for expr in ctx.expression()]
 
 def main():
-    input_stream = FileStream("./example_code/fibonacci.csh", encoding="utf-8")
+    input_stream = FileStream("./example_code/helloWorld.csh", encoding="utf-8")
     lexer = CASHLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     parser = CASHParser(token_stream)
