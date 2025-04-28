@@ -18,11 +18,11 @@
    ```
 2. Generate lexer and parser
    ```
-   antlr CASHTokens.g4
+   antlr CASHTokens.g4 -o gen
    ```
 3. Compile lexer and scanner
    ```
-   javac *.java
+   javac gen/*.java
    ```
 4. Debug language
 
@@ -38,5 +38,11 @@
 ### Interpreter: Generate visitor
 
 ```
-antlr4 -Dlanguage=Python3 CASH.g4 -o cash -visitor
+antlr4 -Dlanguage=Python3 CASH.g4 -o interpreter/cash -visitor
+```
+
+Run interpreter
+
+```
+python3 interpreter/main.py
 ```
