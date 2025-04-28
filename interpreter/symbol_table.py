@@ -34,3 +34,12 @@ class SymbolTable:
 
     def get_task(self, name: str): 
         return self.tasks[name]
+    
+    def is_defined(self, name: str):
+        result = name in self.storage
+        if not result and self.next is not None:
+            return self.next.is_defined(name)
+        return result
+
+    def resister_var_name(self, name: str):
+        self.types[name] = {"string", "integer", "float"}
