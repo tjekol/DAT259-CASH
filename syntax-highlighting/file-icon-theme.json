@@ -1,0 +1,12 @@
+{
+    "iconDefinitions": {
+      "cash-icon": {
+        "iconPath": "./icon.svg"
+      }
+    },
+    "fileExtensions": {
+      "cash": "cash-icon"
+    },
+    "fileNames": {}
+  }
+  

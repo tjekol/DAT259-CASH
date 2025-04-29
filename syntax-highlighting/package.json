@@ -1,0 +1,33 @@
+{
+  "name": "cash",
+  "displayName": "CA$H",
+  "description": "A custom programming language CA$H",
+  "version": "0.0.1",
+  "publisher": "vetlemknutsen",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "cash",
+      "aliases": ["CA$H", "cash"],
+      "extensions": [".cash"],
+      "configuration": "./language-configuration.json"
+    }],
+    "iconThemes": [
+    {
+      "id": "cash-icons",
+      "label": "CA$H File Icons",
+      "path": "./file-icon-theme.json"
+    }
+  ],
+    "grammars": [{
+      "language": "cash",
+      "scopeName": "source.cash",
+      "path": "./syntaxes/cash.tmLanguage.json"
+    }]
+  }
+}
