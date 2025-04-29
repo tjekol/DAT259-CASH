@@ -1,0 +1,82 @@
+{
+	"name": "CASH Language",
+	"scopeName": "source.cash",
+	"fileTypes": [".cash"],
+	"patterns": [
+	  {
+		"name": "keyword.control.start.cash",
+		"match": "\\bHELLO\\.\\b"
+	  },
+	  {
+		"name": "keyword.control.end.cash",
+		"match": "\\bBYE\\.\\b"
+	  },
+	  {
+		"name": "punctuation.terminator.cash",
+		"match": "\\."
+	  },
+	  {
+		"name": "constant.currency.cash",
+		"match": "\\$"
+	  },
+	  {
+		"name": "punctuation.separator.cash",
+		"match": "[,:]"
+	  },
+	  {
+		"name": "keyword.operator.arithmetic.cash",
+		"match": "[\\+\\-\\*/]"
+	  },
+	  {
+		"name": "keyword.operator.comparison.cash",
+		"match": "<=|>=|[<>]="
+	  },
+	  {
+		"name": "keyword.control.cash",
+		"match": "\\b(COST|RECEIPT|DISCOUNT|ASK|SCAN)\\b"
+	  },
+	  {
+		"name": "keyword.control.task.cash",
+		"match": "\\b(START TASK|END|TODO|IN)\\b"
+	  },
+	  {
+		"name": "keyword.control.conditional.cash",
+		"match": "\\b(CONFIRM|CHECK_AGAIN|FALLBACK)\\b"
+	  },
+	  {
+		"name": "constant.numeric.integer.cash",
+		"match": "-?\\d+"
+	  },
+	  {
+		"name": "constant.numeric.float.cash",
+		"match": "-?\\d+,\\d+"
+	  },
+	  {
+		"name": "string.quoted.double.cash",
+		"begin": "\"",
+		"end": "\"",
+		"patterns": [
+		  {
+			"name": "constant.character.escape.cash",
+			"match": "\\\\."
+		  }
+		]
+	  },
+	  {
+		"name": "variable.identifier.cash",
+		"match": "\\b[a-zA-ZåæøÅÆØ][a-zA-ZåæøÅÆØ\\-0-9]*\\b"
+	  },
+	  {
+		"name": "comment.line.note.cash",
+		"begin": "NOTE",
+		"end": "\\$\\n",
+		"patterns": [
+		  {
+			"name": "punctuation.definition.comment.cash",
+			"match": "\\$"
+		  }
+		]
+	  }
+	],
+	"repository": {}
+  }
