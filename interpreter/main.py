@@ -20,7 +20,6 @@ class InterpreterVisitor(CASHVisitor):
             empty_string += str(value)
         print(str(empty_string))
 
-
     def visitCost(self, ctx: CASHParser.CostContext):
         name = str(ctx.IDENTIFIER())
         value = self.visit(ctx.expression())
@@ -92,7 +91,6 @@ class InterpreterVisitor(CASHVisitor):
         while isSatisfied:
             for stmt in ctx.main_stmt():
                 self.visit(stmt)
-
             isSatisfied = self.visit(ctx.comparison())
 
     def visitTask_mod(self, ctx: CASHParser.Task_modContext):
