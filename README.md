@@ -44,7 +44,7 @@ antlr -Dlanguage=Python3 CASH.g4 -o interpreter/cash -visitor
 Run interpreter
 
 ```
-python3 interpreter/main.py
+python interpreter/main.py
 ```
 
 ### Compiler: Compile a file
@@ -56,9 +56,10 @@ pip install llvmlite==0.44.0
 ```
 
 #### Compile a file
+
 Example for `helloWorld.cash`
 
 ```
 antlr -Dlanguage=Python3 CASH.g4 -o compiler/cash -visitor
-python3 compiler/compiler.py example_code/helloWorld.csh
+python compiler/compiler.py example_code/helloWorld.csh
 ```
