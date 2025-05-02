@@ -4,3 +4,6 @@ cash/
 .antlr
 # Generated files
 CASHTokens.*
+.DS_STORE
+__pycache__/*
+interpreter/__pycache__/*
