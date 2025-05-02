@@ -3,8 +3,8 @@
 - [x] Lexer
 - [x] Parser
 - [x] Semantic analysis
-- [ ] Interpreter
-- [ ] Compiler
+- [x] Interpreter
+- [x] Compiler
 
 ![illustration](./illustration.png)
 
@@ -45,4 +45,20 @@ Run interpreter
 
 ```
 python3 interpreter/main.py
+```
+
+### Compiler: Compile a file
+
+Install llvmlite
+
+```
+pip install llvmlite==0.44.0
+```
+
+#### Compile a file
+Example for `helloWorld.cash`
+
+```
+antlr4 -Dlanguage=Python3 CASH.g4 -o compiler/cash -visitor
+python3 compiler/compiler.py example_code/helloWorld.csh
 ```
