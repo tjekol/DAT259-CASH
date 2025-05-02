@@ -38,7 +38,7 @@
 ### Interpreter: Generate visitor
 
 ```
-antlr4 -Dlanguage=Python3 CASH.g4 -o interpreter/cash -visitor
+antlr -Dlanguage=Python3 CASH.g4 -o interpreter/cash -visitor
 ```
 
 Run interpreter
@@ -59,6 +59,6 @@ pip install llvmlite==0.44.0
 Example for `helloWorld.cash`
 
 ```
-antlr4 -Dlanguage=Python3 CASH.g4 -o compiler/cash -visitor
+antlr -Dlanguage=Python3 CASH.g4 -o compiler/cash -visitor
 python3 compiler/compiler.py example_code/helloWorld.csh
 ```
