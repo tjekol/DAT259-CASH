@@ -1,3 +1,4 @@
+from __future__ import annotations
 class Task: 
     def __init__(self, name: str, param_names: list, body):
         self.name = name
@@ -15,10 +16,11 @@ class Task:
 
 class SymbolTable:
 
-    def __init__(self):
+    def __init__(self, next: SymbolTable | None = None):
         self.storage = {}
         self.tasks = {}
         self.types = {}
+        self.next = next
 
     def add_var(self, name: str, value: float):
         self.storage[name] = value
