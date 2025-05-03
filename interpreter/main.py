@@ -54,6 +54,12 @@ class InterpreterVisitor(CASHVisitor):
             return left > right
         elif ctx.COMPARE_GTE() is not None:
             return left >= right
+        
+    def visitConcat(self, ctx: CASHParser.ConcatContext):
+        return str(self.visit(ctx.getChild(0))) + str(self.visit(ctx.getChild(2)))
+    
+    def visitSplit(self, ctx: CASHParser.SplitContext):
+        return str(self.visit(ctx.getChild(0))).split(str(self.visit(ctx.getChild(2))))
 
     # TYPES
     def visitInt(self, ctx: CASHParser.IntContext):
@@ -67,6 +73,14 @@ class InterpreterVisitor(CASHVisitor):
         var = self.symbol_table.get_var(name)
         return var
     
+    def visitStrlit(self, ctx: CASHParser.StrlitContext):
+        return self.visit(ctx.str_lit())
+
+    def visitStr_lit(self, ctx: CASHParser.Str_litContext):
+        if ctx.STRING() is not None:
+            return str(ctx.STRING())[1:-1]
+        if ctx.WHITESPACE() is not None:
+            return ' '
     
     # STATEMENTS
     def visitPrint(self, ctx: CASHParser.PrintContext):
