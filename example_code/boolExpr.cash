@@ -1,0 +1,17 @@
+HELLO.
+
+COST total = 20 $
+
+NOTE Will run one time $
+SCAN (NOT (total = 0)):
+  RECEIPT "Total is: ", total $
+  COST total = 0 $
+$
+
+NOTE The CONFIRM underneath will happen $
+CONFIRM NOT (total = 0):
+  RECEIPT "Total is not 0, it is ", total $
+
+RECEIPT total $
+
+BYE.
