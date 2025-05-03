@@ -30,6 +30,9 @@ OP_ADD : '+';
 OP_SUB : '-';
 OP_DIV : '/';
 
+SOP_CONCAT : '++';
+SOP_SPLIT : '//';
+
 COND_CONF : 'CONFIRM';
 COND_CHECK : 'CHECK_AGAIN';
 COND_FALLBACK : 'FALLBACK';
@@ -39,7 +42,6 @@ COMPARE_LT : '<';
 COMPARE_LTE : '<=';
 COMPARE_GT : '>';
 COMPARE_GTE : '>=';
-
 
 INT: '-'? DIGIT+;
 FLOAT: '-'? DIGIT+ ',' DIGIT+;
