@@ -1,17 +1,20 @@
 HELLO.
 
-COST total = 20 $
+COST counter = 3 $
 
-NOTE Will run one time $
-SCAN (NOT (total = 0)):
-  RECEIPT "Total is: ", total $
-  COST total = 0 $
+COST total = 4 $
+COST price = 5 $
+COST discount = 10 $
+
+NOTE Should loop 3 times $
+SCAN (NOT (counter = 0)):
+  RECEIPT "Counter: ", counter $
+  COST counter = counter - 1 $
 $
 
-NOTE The CONFIRM underneath will happen $
-CONFIRM NOT (total = 0):
-  RECEIPT "Total is not 0, it is ", total $
-
-RECEIPT total $
+CONFIRM (total < 5 OR price > 5) AND discount > 0:
+  RECEIPT "Total is low or price is high, and there's a discount!" $
+  DISCOUNT(discount, total) $
+  RECEIPT "Total after discount: ", total $
 
 BYE.
