@@ -225,7 +225,7 @@ class Compiler(CASHVisitor):
         """
         Output the generated LLVM IR to a .ll file for inspection or compilation.
         """
-        filename = (str(self.source_file).split('/')[1]).split(".")[0]
+        filename = self.source_file.stem
         source_file = "compiler/" + filename + '.ll'
         with open(source_file, "w") as out:
             out.write(str(self.module))
@@ -234,7 +234,7 @@ class Compiler(CASHVisitor):
         """
         Use clang to compile the .ll file into a native executable.
         """
-        filename = (str(self.source_file).split('/')[1]).split(".")[0]
+        filename = self.source_file.stem
         source_file = "compiler/" + filename + '.ll'
         subprocess.run(['clang', source_file, '-w', '-o', source_file.split(".")[0]])
 
@@ -273,10 +273,9 @@ def main():
         # compile and run
         compiler.write_llvm_file()
         compiler.call_llvm_compile()
-        fpath = (str(fpath).split("/")[1]).split(".")[0]
-        subprocess.run(f"./compiler/{fpath}")
+        subprocess.run(f"./compiler/{fpath.stem}")
     else:
-        print("Usage: python compiler/compiler.py path/to/file.cash")
+        print("Usage: python compiler.py path/to/file.csh [--debug]")
 
 if __name__ == "__main__":
     main()
