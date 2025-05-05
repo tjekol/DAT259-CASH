@@ -161,24 +161,20 @@ class InterpreterVisitor(CASHVisitor):
         return [self.visit(expr) for expr in ctx.expression()]
 
 def main():
-    input_stream = FileStream("./example_code/helloWorld.csh", encoding="utf-8")
-    # input_stream = FileStream("./example_code/calc.csh", encoding="utf-8")
-    # input_stream = FileStream("./example_code/boolExpr.cash", encoding="utf-8")
-    # input_stream = FileStream("./example_code/fibonacci.csh", encoding="utf-8")
-    # input_stream = FileStream("./example_code/func.csh", encoding="utf-8")
-    # input_stream = FileStream("./example_code/ifThenElse.csh", encoding="utf-8")
-    # input_stream = FileStream("./example_code/int_float.csh", encoding="utf-8")
-    # input_stream = FileStream("./example_code/promptUser.csh", encoding="utf-8")
-    # input_stream = FileStream("./example_code/while.csh", encoding="utf-8")
+    if len(sys.argv) >= 2:
+        fname = sys.argv[1]
+        input_stream = FileStream(fname, encoding="utf-8")
 
-    lexer = CASHLexer(input_stream)
-    token_stream = CommonTokenStream(lexer)
-    parser = CASHParser(token_stream)
-    tree = parser.program()
-    table = SymbolTable()
-    visitor = InterpreterVisitor(table)
-    visitor.visit(tree)
-    # print(tree.toStringTree(recog=parser))
+        lexer = CASHLexer(input_stream)
+        token_stream = CommonTokenStream(lexer)
+        parser = CASHParser(token_stream)
+        tree = parser.program()
+        table = SymbolTable()
+        visitor = InterpreterVisitor(table)
+        visitor.visit(tree)
+        # print(tree.toStringTree(recog=parser))
+    else:
+        print("Usage: python interpreter/interpreter.py path/to/file.cash")
 
 if __name__ == '__main__':
     main()

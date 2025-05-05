@@ -163,7 +163,7 @@ def main():
         fpath = (str(fpath).split("/")[1]).split(".")[0]
         subprocess.run(f"./compiler/{fpath}")
     else:
-        print("Usage: python compiler.py path/to/file.csh [--debug]")
+        print("Usage: python compiler/compiler.py path/to/file.cash")
 
 if __name__ == "__main__":
     main()
