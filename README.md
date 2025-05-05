@@ -32,7 +32,7 @@
 
    - Example:
      ```
-     antdbg CASHTokens tokens -tokens Example\ code/helloWorld.csh
+     (cd gen && antdbg CASHTokens tokens -tokens ../example_code/helloWorld.cash)
      ```
 
 ### Interpreter: Generate visitor
@@ -42,9 +42,13 @@ antlr -Dlanguage=Python3 CASH.g4 -o interpreter/cash -visitor
 ```
 
 Run interpreter
+```
+python interpreter/interpreter.py /path/to/file
+```
+With `helloWorld.cash` example:
 
 ```
-python interpreter/main.py
+python interpreter/interpreter.py example_code/helloWorld.cash
 ```
 
 ### Compiler: Compile a file
@@ -61,5 +65,5 @@ Example for `helloWorld.cash`
 
 ```
 antlr -Dlanguage=Python3 CASH.g4 -o compiler/cash -visitor
-python compiler/compiler.py example_code/helloWorld.csh
+python compiler/compiler.py example_code/helloWorld.cash
 ```
