@@ -260,7 +260,7 @@ def main():
         token_stream = CommonTokenStream(lexer)
         parser = CASHParser(token_stream)
         tree = parser.program()
-
+        print(tree.toStringTree(recog=parser))
 
         # compile the parse tree to LLVM 
         compiler = Compiler(fpath)
