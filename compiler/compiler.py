@@ -90,8 +90,10 @@ class Compiler(CASHVisitor):
         Emit IR to print a string using printf.
         Currently supports only string literals.
         """
-        if ctx.STRING():
-            value = str(ctx.STRING())[1:-1] + "\n\0"  # Strip quotes + add newline and null terminator
+        expr = ctx.expression()
+        if expr and expr.str_lit() and expr.str_lit().STRING():
+            string_node = expr.str_lit().STRING()
+            value = str(string_node)[1:-1] + "\n\0"  # Strip quotes + add newline and null terminator
             value_bytes = value.encode()
 
             # Create a constant array for the string
@@ -148,6 +150,8 @@ def main():
         token_stream = CommonTokenStream(lexer)
         parser = CASHParser(token_stream)
         tree = parser.program()
+        print(tree.toStringTree(recog=parser))
+
 
         # --- Compile the parse tree to LLVM ---
         compiler = Compiler(fpath)
