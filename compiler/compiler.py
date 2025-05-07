@@ -96,10 +96,9 @@ class Compiler(CASHVisitor):
             self.variables[var_name] = value
 
     def visitPrint(self, ctx: CASHParser.PrintContext):
-        # case 1: String only 
-        if ctx.STRING() and not ctx.expression():
-            string_node = ctx.STRING()
-            value = string_node.getText()[1:-1] + "\n\0"
+        # Case 1: String only
+        if ctx.expression() and ctx.expression().getChild(0).getText().startswith('"'):
+            value = ctx.expression().getChild(0).getText()[1:-1] + "\n\0" 
             value_bytes = value.encode()
 
             array_type = ir.ArrayType(BYTE_TYPE, len(value_bytes))
@@ -112,39 +111,47 @@ class Compiler(CASHVisitor):
 
             ptr = self.current_builder.bitcast(glob, ir.PointerType(BYTE_TYPE))
             self.current_builder.call(self.with_printf(), [ptr])
-        
-        # case 2: String and variable
+
+        # Case 2: String and variable
         elif ctx.STRING() and ctx.expression():
             format_str = ctx.STRING().getText()[1:-1] + "%d\n\0"
             format_bytes = format_str.encode()
-            
+
             array_type = ir.ArrayType(BYTE_TYPE, len(format_bytes))
             const_val = ir.Constant(array_type, bytearray(format_bytes))
-            
+
             var_name = self.next_constant()
             glob = ir.GlobalVariable(self.module, array_type, name=var_name)
             glob.global_constant = True
             glob.initializer = const_val
-            
+
             ptr = self.current_builder.bitcast(glob, ir.PointerType(BYTE_TYPE))
             var_value = self.visit(ctx.expression())
+
+            if isinstance(var_value, tuple):
+                var_value = var_value[1]
+
             self.current_builder.call(self.with_printf(), [ptr, var_value])
-        
-        # case 3: Variable only 
+
+        # Case 3: Variable only
         elif ctx.expression():
             format_str = "%d\n\0"
             format_bytes = format_str.encode()
-            
+
             array_type = ir.ArrayType(BYTE_TYPE, len(format_bytes))
             const_val = ir.Constant(array_type, bytearray(format_bytes))
-            
+
             var_name = self.next_constant()
             glob = ir.GlobalVariable(self.module, array_type, name=var_name)
             glob.global_constant = True
             glob.initializer = const_val
-            
+
             ptr = self.current_builder.bitcast(glob, ir.PointerType(BYTE_TYPE))
             var_value = self.visit(ctx.expression())
+
+            if isinstance(var_value, tuple):
+                var_value = var_value[1]
+
             self.current_builder.call(self.with_printf(), [ptr, var_value])
 
 
@@ -189,21 +196,19 @@ class Compiler(CASHVisitor):
         return self.current_builder.sdiv(left, right)
 
     def visitStrlit(self, ctx: CASHParser.StrlitContext):
-        if ctx.STRING():
-            value = ctx.STRING().getText()[1:-1] + "\0"
-            value_bytes = value.encode()
+        value = ctx.getText()[1:-1] + "\0"  
+        value_bytes = value.encode()
 
-            array_type = ir.ArrayType(BYTE_TYPE, len(value_bytes))
-            const_val = ir.Constant(array_type, bytearray(value_bytes))
+        array_type = ir.ArrayType(BYTE_TYPE, len(value_bytes))
+        const_val = ir.Constant(array_type, bytearray(value_bytes))
 
-            var_name = self.next_constant()
-            glob = ir.GlobalVariable(self.module, array_type, name=var_name)
-            glob.global_constant = True
-            glob.initializer = const_val
+        var_name = self.next_constant()
+        glob = ir.GlobalVariable(self.module, array_type, name=var_name)
+        glob.global_constant = True
+        glob.initializer = const_val
 
-            ptr = self.current_builder.bitcast(glob, ir.PointerType(BYTE_TYPE))
-            return (value, ptr)
-        return ("", None)
+        ptr = self.current_builder.bitcast(glob, ir.PointerType(BYTE_TYPE))
+        return (value, ptr)
 
     def visitFloat(self, ctx: CASHParser.FloatContext):
         # Convert comma to decimal point for float parsing
@@ -260,8 +265,7 @@ def main():
         token_stream = CommonTokenStream(lexer)
         parser = CASHParser(token_stream)
         tree = parser.program()
-        print(tree.toStringTree(recog=parser))
-
+        
         # compile the parse tree to LLVM 
         compiler = Compiler(fpath)
         compiler.visit(tree)
