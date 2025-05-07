@@ -275,7 +275,7 @@ def main():
         compiler.call_llvm_compile()
         subprocess.run(f"./compiler/{fpath.stem}")
     else:
-        print("Usage: python compiler.py path/to/file.csh [--debug]")
+        print("Usage: python compiler.py path/to/file.cash [--debug]")
 
 if __name__ == "__main__":
     main()
