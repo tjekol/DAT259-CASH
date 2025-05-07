@@ -11,8 +11,6 @@ from cash.CASHParser import CASHParser
 from cash.CASHLexer import CASHLexer
 from cash.CASHVisitor import CASHVisitor
 
-# --- LLVM MODULE SETUP ---
-
 def init_module(source_file: Path):
     """
     Initialize an LLVM module for the given source file.
@@ -29,14 +27,12 @@ def init_module(source_file: Path):
     module.data_layout = str(machine.target_data)
     return module
 
-# --- LLVM TYPE DEFINITIONS ---
+BYTE_TYPE = ir.IntType(8) 
+DEFAULT_INT = ir.IntType(32)  
+FLOAT_TYPE = ir.FloatType()
+PRINTF_TYPE = ir.FunctionType(DEFAULT_INT, (ir.PointerType(BYTE_TYPE),), var_arg=True) 
+MAIN_TYPE = ir.FunctionType(DEFAULT_INT, ()) 
 
-BYTE_TYPE = ir.IntType(8)  # Represents a single byte (char)
-DEFAULT_INT = ir.IntType(32)  # Used for integers and main() return type
-PRINTF_TYPE = ir.FunctionType(DEFAULT_INT, (ir.PointerType(BYTE_TYPE),), var_arg=True)  # printf signature
-MAIN_TYPE = ir.FunctionType(DEFAULT_INT, ())  # int main()
-
-# --- CASH TO LLVM COMPILER VISITOR ---
 
 class Compiler(CASHVisitor):
     """
@@ -47,9 +43,11 @@ class Compiler(CASHVisitor):
     def __init__(self, source_file: Path):
         self.source_file = source_file
         self.module = init_module(source_file)
-        self.uses_c_printf = None  # Lazy initialization of printf
-        self.current_builder = None  # Will build IR in current basic block
-        self.constant_counter = 0  # For generating unique global string names
+        self.uses_c_printf = None  
+        self.current_builder = None 
+        self.constant_counter = 0 
+        self.variables = {}  
+        self.string_vars = {}
 
     def next_constant(self, prefix: str = "str"):
         """
@@ -77,38 +75,151 @@ class Compiler(CASHVisitor):
         mainf = ir.Function(self.module, MAIN_TYPE, name="main")
         main_block = mainf.append_basic_block("entry")
         self.current_builder = ir.IRBuilder(main_block)
-
-        # Visit each top-level statement (e.g., RECEIPT "Hello")
+        
         for child in ctx.children:
-            self.visit(child)
+            if hasattr(child, 'children'):
+                for stmt in child.children:
+                    self.visit(stmt)
+            else:
+                self.visit(child)
 
-        # Add return 0 to end main
         self.current_builder.ret(ir.Constant(DEFAULT_INT, 0))
 
-    def visitPrint(self, ctx: CASHParser.PrintContext):
-        """
-        Emit IR to print a string using printf.
-        Currently supports only string literals.
-        """
+    def visitCost(self, ctx: CASHParser.CostContext):
+        var_name = ctx.IDENTIFIER().getText()
         expr = ctx.expression()
-        if expr and expr.str_lit() and expr.str_lit().STRING():
-            string_node = expr.str_lit().STRING()
-            value = str(string_node)[1:-1] + "\n\0"  # Strip quotes + add newline and null terminator
+        value = self.visit(expr)
+        
+        if isinstance(value, tuple):
+            self.string_vars[var_name] = value
+        else:  
+            self.variables[var_name] = value
+
+    def visitPrint(self, ctx: CASHParser.PrintContext):
+        # case 1: String only 
+        if ctx.STRING() and not ctx.expression():
+            string_node = ctx.STRING()
+            value = string_node.getText()[1:-1] + "\n\0"
             value_bytes = value.encode()
 
-            # Create a constant array for the string
             array_type = ir.ArrayType(BYTE_TYPE, len(value_bytes))
             const_val = ir.Constant(array_type, bytearray(value_bytes))
 
-            # Declare it as a global constant
             var_name = self.next_constant()
             glob = ir.GlobalVariable(self.module, array_type, name=var_name)
             glob.global_constant = True
             glob.initializer = const_val
 
-            # Convert array to pointer and call printf
             ptr = self.current_builder.bitcast(glob, ir.PointerType(BYTE_TYPE))
             self.current_builder.call(self.with_printf(), [ptr])
+        
+        # case 2: String and variable
+        elif ctx.STRING() and ctx.expression():
+            format_str = ctx.STRING().getText()[1:-1] + "%d\n\0"
+            format_bytes = format_str.encode()
+            
+            array_type = ir.ArrayType(BYTE_TYPE, len(format_bytes))
+            const_val = ir.Constant(array_type, bytearray(format_bytes))
+            
+            var_name = self.next_constant()
+            glob = ir.GlobalVariable(self.module, array_type, name=var_name)
+            glob.global_constant = True
+            glob.initializer = const_val
+            
+            ptr = self.current_builder.bitcast(glob, ir.PointerType(BYTE_TYPE))
+            var_value = self.visit(ctx.expression())
+            self.current_builder.call(self.with_printf(), [ptr, var_value])
+        
+        # case 3: Variable only 
+        elif ctx.expression():
+            format_str = "%d\n\0"
+            format_bytes = format_str.encode()
+            
+            array_type = ir.ArrayType(BYTE_TYPE, len(format_bytes))
+            const_val = ir.Constant(array_type, bytearray(format_bytes))
+            
+            var_name = self.next_constant()
+            glob = ir.GlobalVariable(self.module, array_type, name=var_name)
+            glob.global_constant = True
+            glob.initializer = const_val
+            
+            ptr = self.current_builder.bitcast(glob, ir.PointerType(BYTE_TYPE))
+            var_value = self.visit(ctx.expression())
+            self.current_builder.call(self.with_printf(), [ptr, var_value])
+
+
+    def visitDiscount(self, ctx: CASHParser.DiscountContext):
+        percentage = self.visit(ctx.expression()) 
+        var_name = ctx.IDENTIFIER().getText()
+        
+        if var_name in self.variables:
+            value = self.variables[var_name]
+            hundred = ir.Constant(DEFAULT_INT, 100)
+            
+            # Calculate (100 - percentage)
+            diff = self.current_builder.sub(hundred, percentage)
+            # Multiply by value
+            product = self.current_builder.mul(value, diff)
+            # Divide by 100
+            discounted = self.current_builder.sdiv(product, hundred)
+            
+            self.variables[var_name] = discounted
+
+    def visitNested(self, ctx: CASHParser.NestedContext):
+        return self.visit(ctx.expression())
+
+    def visitMult(self, ctx: CASHParser.MultContext):
+        left = self.visit(ctx.expression(0))
+        right = self.visit(ctx.expression(1))
+        return self.current_builder.mul(left, right)
+
+    def visitAdd(self, ctx: CASHParser.AddContext):
+        left = self.visit(ctx.expression(0))
+        right = self.visit(ctx.expression(1))
+        return self.current_builder.add(left, right)
+
+    def visitSub(self, ctx: CASHParser.SubContext):
+        left = self.visit(ctx.expression(0))
+        right = self.visit(ctx.expression(1))
+        return self.current_builder.sub(left, right)
+
+    def visitDiv(self, ctx: CASHParser.DivContext):
+        left = self.visit(ctx.expression(0))
+        right = self.visit(ctx.expression(1))
+        return self.current_builder.sdiv(left, right)
+
+    def visitStrlit(self, ctx: CASHParser.StrlitContext):
+        if ctx.STRING():
+            value = ctx.STRING().getText()[1:-1] + "\0"
+            value_bytes = value.encode()
+
+            array_type = ir.ArrayType(BYTE_TYPE, len(value_bytes))
+            const_val = ir.Constant(array_type, bytearray(value_bytes))
+
+            var_name = self.next_constant()
+            glob = ir.GlobalVariable(self.module, array_type, name=var_name)
+            glob.global_constant = True
+            glob.initializer = const_val
+
+            ptr = self.current_builder.bitcast(glob, ir.PointerType(BYTE_TYPE))
+            return (value, ptr)
+        return ("", None)
+
+    def visitFloat(self, ctx: CASHParser.FloatContext):
+        # Convert comma to decimal point for float parsing
+        float_str = ctx.FLOAT().getText().replace(',', '.')
+        return ir.Constant(FLOAT_TYPE, float(float_str))
+
+    def visitInt(self, ctx: CASHParser.IntContext):
+        return ir.Constant(DEFAULT_INT, int(ctx.INT().getText()))
+
+    def visitVar(self, ctx: CASHParser.VarContext):
+        var_name = ctx.IDENTIFIER().getText()
+        if var_name in self.variables:
+            return self.variables[var_name]
+        elif var_name in self.string_vars:
+            return self.string_vars[var_name]
+        return ir.Constant(DEFAULT_INT, 0)
 
     def write_llvm_file(self):
         """
@@ -129,11 +240,10 @@ class Compiler(CASHVisitor):
 
     def print_llvm(self):
         """
-        Return the LLVM IR as a string (for debugging).
+        Return the LLVM IR as a string.
         """
         return str(self.module)
 
-# --- MAIN ENTRY POINT ---
 
 def main():
     """
@@ -144,24 +254,23 @@ def main():
         fname = sys.argv[1]
         fpath = Path(fname)
 
-        # --- Parse the CASH source using ANTLR ---
+        # parse the CASH source using ANTLR 
         input_stream = FileStream(fname, encoding="utf-8")
         lexer = CASHLexer(input_stream)
         token_stream = CommonTokenStream(lexer)
         parser = CASHParser(token_stream)
         tree = parser.program()
-        print(tree.toStringTree(recog=parser))
 
 
-        # --- Compile the parse tree to LLVM ---
+        # compile the parse tree to LLVM 
         compiler = Compiler(fpath)
         compiler.visit(tree)
 
-        # --- Optionally print LLVM IR for debugging ---
+        # optionally print LLVM IR for debugging 
         if "--debug" in sys.argv:
             print(compiler.print_llvm())
 
-        # --- Compile and run ---
+        # compile and run
         compiler.write_llvm_file()
         compiler.call_llvm_compile()
         fpath = (str(fpath).split("/")[1]).split(".")[0]
