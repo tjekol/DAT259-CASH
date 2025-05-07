@@ -126,10 +126,10 @@ class TypeChecker(CASHVisitor):
             else:
                 print(f"Error: {var_name} is unclear!")
 def main():
-    # input_stream = FileStream("./example_code/calc.csh", encoding="utf-8")
-    # input_stream = FileStream("./example_code/ifThenElse.csh", encoding="utf-8")
-    input_stream = FileStream("./example_code/int_float.csh", encoding="utf-8")
-    # input_stream = FileStream("./example_code/while.csh", encoding="utf-8")
+    # input_stream = FileStream("./example_code/calc.cash", encoding="utf-8")
+    # input_stream = FileStream("./example_code/ifThenElse.cash", encoding="utf-8")
+    input_stream = FileStream("./example_code/int_float.cash", encoding="utf-8")
+    # input_stream = FileStream("./example_code/while.cash", encoding="utf-8")
 
     lexer = CASHLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
