@@ -44,4 +44,4 @@ bool_expr : OPEN_PAREN bool_expr CLOSE_PAREN # nested_bool
 
 comparison : expression (COMPARE_EQ | COMPARE_LT | COMPARE_GT | COMPARE_GTE | COMPARE_LTE) expression;
 
-str_lit : WHITESPACE | STRING;
+str_lit : STRING;
