@@ -1,6 +1,6 @@
 # CA$H
 
-![illustration](./tokens.png.png)
+![illustration](./tokens.png)
 
 ### Lexer: How to check Tokens?
 
