@@ -65,5 +65,5 @@ python compiler/compiler.py example_code/helloWorld.cash
 ### Syntax highlighting (optional)
 VSCode exclusive syntax highlighting extension
 ```
-code -- install - extension syntax - highlighting / cash -0.0.1. vsix
+code --install-extension syntax-highlighting/cash-0.0.1.vsix
 ```
