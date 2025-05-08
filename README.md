@@ -62,7 +62,7 @@ antlr -Dlanguage=Python3 CASH.g4 -o compiler/cash -visitor
 python compiler/compiler.py example_code/helloWorld.cash
 ```
 
-#### Syntax highlighting (optional)
+### Syntax highlighting (optional)
 VSCode exclusive syntax highlighting extension
 ```
 code -- install - extension syntax - highlighting / cash -0.0.1. vsix
