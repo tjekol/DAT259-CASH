@@ -2,6 +2,8 @@
 
 ![illustration](./tokens.png)
 
+Read our report about our programming language [here](/DAT259_CASH.pdf). The report contains instructions on how to test our language, which installations that is needed, and how we created everything with ANTLR.
+
 ### Lexer: How to check Tokens?
 
 1. Set path and aliases
@@ -36,9 +38,11 @@ antlr -Dlanguage=Python3 CASH.g4 -o interpreter/cash -visitor
 ```
 
 Run interpreter
+
 ```
 python interpreter/interpreter.py /path/to/file
 ```
+
 With `helloWorld.cash` example:
 
 ```
@@ -63,7 +67,9 @@ python compiler/compiler.py example_code/helloWorld.cash
 ```
 
 ### Syntax highlighting (optional)
+
 VSCode exclusive syntax highlighting extension
+
 ```
 code --install-extension syntax-highlighting/cash-0.0.1.vsix
 ```
